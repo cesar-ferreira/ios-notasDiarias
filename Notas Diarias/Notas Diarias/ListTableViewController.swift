@@ -7,40 +7,68 @@
 //
 
 import UIKit
+import CoreData
 
 class ListTableViewController: UITableViewController {
 
+    var context: NSManagedObjectContext!
+    var notes: [NSManagedObject] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        context = appDelegate.persistentContainer.viewContext
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        getNotes()
+    }
+    
+    private func getNotes() {
+        
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Note")
+        
+        do {
+            let getNotes = try context.fetch(request)
+            self.notes = getNotes as! [NSManagedObject]
+            
+            self.tableView.reloadData()
+        } catch let error {
+            print("Erro ao recuperar dados: " + error.localizedDescription)
+        }
+        
     }
 
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 0
+        return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 0
+        return self.notes.count
     }
 
-    /*
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "item", for: indexPath)
 
         // Configure the cell...
+        let note = self.notes[ indexPath.row ]
+        let dateFormatter = DateFormatter()
+        
+        dateFormatter.dateFormat = "dd/MM/yyyy hh:mm"
+        let newDate = dateFormatter.string(from: note.value(forKey: "date") as! Date)
+        
+        cell.textLabel?.text = note.value(forKey: "text") as? String
+        cell.detailTextLabel?.text = String( describing: newDate )
 
         return cell
     }
-    */
+    
 
     /*
     // Override to support conditional editing of the table view.

@@ -25,7 +25,7 @@ class AddViewController: UIViewController {
     
     @IBAction func saveNote(_ sender: Any) {
         
-        
+        saveNewNote()
         self.navigationController?.popToRootViewController(animated: true)
         
     }
