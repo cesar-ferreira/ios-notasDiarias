@@ -28,6 +28,8 @@ class ListTableViewController: UITableViewController {
     private func getNotes() {
         
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Note")
+        let ordenation = NSSortDescriptor(key: "date", ascending: false)
+        request.sortDescriptors = [ordenation]
         
         do {
             let getNotes = try context.fetch(request)
@@ -69,7 +71,43 @@ class ListTableViewController: UITableViewController {
         return cell
     }
     
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        self.tableView.deselectRow(at: indexPath, animated: true)
+        
+        let note = self.notes[ indexPath.row ]
+        
+        self.performSegue(withIdentifier: "segue-note", sender: note)
+    }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        if ( segue.identifier == "segue-note" ) {
+            
+            let addViewController = segue.destination as! AddViewController
+            addViewController.note = sender as? NSManagedObject
+            
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        
+        if( editingStyle == UITableViewCell.EditingStyle.delete ) {
+            
+            self.context.delete(self.notes[indexPath.row])
+            self.notes.remove(at: indexPath.row)
+            self.tableView.deleteRows(at: [indexPath], with: .automatic)
+            
+            do {
+                try self.context.save()
+            } catch let error {
+                print("Erro ao deletar anotação: " + error.localizedDescription)
+            }
+        }
+        
+    }
+    
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

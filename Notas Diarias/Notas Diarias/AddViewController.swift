@@ -13,6 +13,7 @@ class AddViewController: UIViewController {
 
     @IBOutlet weak var textViewNote: UITextView!
     var context: NSManagedObjectContext!
+    var note: NSManagedObject!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,13 +26,39 @@ class AddViewController: UIViewController {
     
     @IBAction func saveNote(_ sender: Any) {
         
-        saveNewNote()
+        if( note != nil ) {
+            updateNote()
+        } else {
+            saveNewNote()
+        }
+        
         self.navigationController?.popToRootViewController(animated: true)
         
     }
     
     private func initialSetup() {
         self.textViewNote.becomeFirstResponder()
+        
+        if( note != nil ) {
+            if let currentText = note.value(forKey: "text") {
+                self.textViewNote.text = String(describing: currentText)
+            }
+        } else {
+            self.textViewNote.text = ""
+        }
+    }
+    
+    private func updateNote() {
+        
+        note.setValue( self.textViewNote.text , forKey: "text")
+        note.setValue( Date(), forKey: "date")
+        
+        do {
+            try context.save()
+        } catch let error {
+            print("Erro ao atualizar anotação: " + error.localizedDescription)
+        }
+        
     }
    
     private func saveNewNote() {

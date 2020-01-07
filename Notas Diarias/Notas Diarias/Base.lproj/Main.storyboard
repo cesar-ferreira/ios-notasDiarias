@@ -49,7 +49,7 @@
                     <navigationItem key="navigationItem" title="Notas Diárias" id="TMG-Np-Gaj">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="fsT-hL-5Ch">
                             <connections>
-                                <segue destination="Eso-z4-ei8" kind="show" id="JMh-6x-XHm"/>
+                                <segue destination="Eso-z4-ei8" kind="show" identifier="segue-note" id="JMh-6x-XHm"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
